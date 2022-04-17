@@ -101,7 +101,8 @@ void DatabaseEditor::showTable() {
   delete column_families;
   delete db;
 }
-std::vector<ColumnFamilyDescriptor>* DatabaseEditor::getTables(string _name, size_t& position) {
+std::vector<ColumnFamilyDescriptor>* DatabaseEditor::getTables
+    (string _name, size_t& position) {
   auto* column_families = new std::vector<ColumnFamilyDescriptor>();
   auto* column_names = new std::vector<string>();
   Status s = DB::ListColumnFamilies(options, db_path, column_names);
