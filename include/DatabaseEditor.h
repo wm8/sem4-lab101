@@ -3,6 +3,7 @@
 #ifndef LAB10_DATABASEEDITOR_H
 #define LAB10_DATABASEEDITOR_H
 #include <string>
+#include <vector>
 #include "Randomizer.h"
 #include "rocksdb/db.h"
 using ROCKSDB_NAMESPACE::ColumnFamilyDescriptor;

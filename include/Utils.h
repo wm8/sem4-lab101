@@ -5,6 +5,7 @@
 #include <exception>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <unistd.h>
 #include <boost/program_options.hpp>
 #include <boost/log/core.hpp>

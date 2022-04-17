@@ -35,18 +35,19 @@ bool ParseArgs(Data* data, int argc, char **argv) {
     }
     if (map.count("log-level")) {
       const string log_level = map["log-level"].as<std::string>();
-      if (log_level == "info")
+      if (log_level == "info") {
         data->log_level = logging::trivial::info;
-      else if (log_level == "warning")
+      } else if (log_level == "warning") {
         data->log_level = logging::trivial::warning;
-      else if (log_level == "error")
+      } else if (log_level == "error") {
         data->log_level = logging::trivial::error;
-      else {
+      } else {
         BOOST_LOG_TRIVIAL(fatal) << "Unknown log level\n";
         return false;
       }
-    } else
+    } else {
       data->log_level = logging::trivial::error;
+    }
     data->thread_count = map["thread-count"].as<unsigned int>();
     data->output_path = map["output"].as<std::string>();
     data->input_path = map["input"].as<std::string>();
@@ -117,7 +118,8 @@ void readTask(unsigned int id, Data* data) {
     delete it;
   }
 }
-void deleteDB(string& path, std::vector<ColumnFamilyDescriptor>* tables, Data* data) {
+void deleteDB(string& path, std::vector<ColumnFamilyDescriptor>* tables,
+              Data* data) {
   DB* db;
   std::vector<ColumnFamilyHandle*> handles;
   Status s = DB::Open(DBOptions(), path, *tables, &handles, &db);
@@ -151,7 +153,8 @@ void run(int argc, char **argv) {
     MESSAGE_LOG(data->log_level) << "Hash db already exists\nDeleting...\n";
     deleteDB(data->output_path, tables2, data);
   }
-  Status s = DB::Open(options, data->input_path, *tables1, &(data->inpHandles),
+  Status s =
+      DB::Open(options, data->input_path, *tables1, &(data->inpHandles),
                       &(data->inpDb));
   if (!s.ok()) MESSAGE_LOG(data->log_level) << s.ToString() << std::endl;
   assert(s.ok());
@@ -198,7 +201,8 @@ void run(int argc, char **argv) {
   delete data;
   MESSAGE_LOG(data->log_level) << "Done!\n";
 }
-void showDB(Data* data, int length, DB* db, std::vector<ColumnFamilyHandle*> handles,
+void showDB(Data* data, int length, DB* db,
+            std::vector<ColumnFamilyHandle*> handles,
             std::vector<ColumnFamilyDescriptor>* tables) {
   std::vector<rocksdb::Iterator*> its;
   std::string line = "|";

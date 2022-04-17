@@ -6,7 +6,7 @@
 #include <iostream>
 #include <queue>
 DatabaseEditor::DatabaseEditor(std::string path) {
-  int mode=-1;
+  int mode = -1;
   db_path = path;
   std::string t;
   options.create_if_missing = true;
@@ -14,15 +14,17 @@ DatabaseEditor::DatabaseEditor(std::string path) {
   options.keep_log_file_num = 1;
   options.info_log_level = ::rocksdb::InfoLogLevel::FATAL_LEVEL;
   options.recycle_log_file_num = 1;
-
-  std::cout << "Modes:\n1 - add (key, value)\n2 - show table\n3 - show all tables\n4 - list of tables\n5 - create empty table\n6 - create random table\n";
-  do
-  {
+  std::cout << "Modes:\n1 - add (key, value)\n2 - show table\n"
+               "3 - show all tables\n4 - list of tables\n"
+               "5 - create empty table\n6 - create random table\n";
+  do {
     std::cout << "Select mode: ";
     std::cin >> mode;
     switch (mode) {
       case 0:
-        std::cout << "Modes:\n1 - add (key, value)\n2 - show table\n3 - show all tables\n4 - list of tables\n5 - create empty table\n6 - create random table\n";
+        std::cout << "Modes:\n1 - add (key, value)\n2 - show table\n"
+                     "3 - show all tables\n4 - list of tables\n"
+                     "5 - create empty table\n6 - create random table\n";
         break;
       case 1:
         addValue();
@@ -33,14 +35,11 @@ DatabaseEditor::DatabaseEditor(std::string path) {
       case 3:
         showAllTables();
         break;
-      case 4:
-      {
+      case 4: {
         size_t pos;
         auto* columns = getTables("", pos);
-        for(auto column: *columns)
-          std::cout << column.name << std::endl;
-      }
-        break;
+        for (auto column : *columns) std::cout << column.name << std::endl;
+      } break;
       case 5:
         createTable();
         break;
@@ -53,24 +52,21 @@ DatabaseEditor::DatabaseEditor(std::string path) {
       default:
         break;
     }
-  }while (mode >= 0 && mode < 8);
+  } while (mode >= 0 && mode < 8);
 }
 void DatabaseEditor::addValue() {
   DB* db;
   string temp, value;
   std::cout << "Enter table name (0 - for default): ";
   std::cin >> temp;
-  if(temp == "0")
-    temp = ROCKSDB_NAMESPACE::kDefaultColumnFamilyName;
+  if (temp == "0") temp = ROCKSDB_NAMESPACE::kDefaultColumnFamilyName;
   size_t pos;
   auto* column_families = getTables(temp, pos);
   std::vector<ColumnFamilyHandle*> handles;
   Status s = DB::Open(DBOptions(), db_path, *column_families, &handles, &db);
-  if(!s.ok())
-  {
+  if (!s.ok()) {
     std::cerr << s.ToString() << std::endl;
-    for (auto handle : handles)
-      db->DestroyColumnFamilyHandle(handle);
+    for (auto handle : handles) db->DestroyColumnFamilyHandle(handle);
     delete column_families;
     delete db;
   }
@@ -80,8 +76,7 @@ void DatabaseEditor::addValue() {
   std::cin >> value;
   db->Put(WriteOptions(), handles[pos], temp, value);
   std::cout << "Done!\n";
-  for (auto handle : handles)
-    db->DestroyColumnFamilyHandle(handle);
+  for (auto handle : handles) db->DestroyColumnFamilyHandle(handle);
   delete column_families;
   delete db;
 }
@@ -98,33 +93,30 @@ void DatabaseEditor::showTable() {
   std::cout << "Table name: " << name << std::endl;
   rocksdb::Iterator* it = db->NewIterator(rocksdb::ReadOptions(), handles[pos]);
   for (it->SeekToFirst(); it->Valid(); it->Next()) {
-    std::cout << "\t" << it->key().ToString() << ": " << it->value().ToString() << std::endl;
+    std::cout << "\t" << it->key().ToString() << ": " << it->value().ToString()
+              << std::endl;
   }
   delete it;
-  for (auto handle : handles)
-    db->DestroyColumnFamilyHandle(handle);
+  for (auto handle : handles) db->DestroyColumnFamilyHandle(handle);
   delete column_families;
   delete db;
-
 }
-std::vector<ColumnFamilyDescriptor>* DatabaseEditor::getTables(string _name, size_t& position)
-{
-  auto *column_families = new std::vector<ColumnFamilyDescriptor>();
+std::vector<ColumnFamilyDescriptor>* DatabaseEditor::getTables(string _name, size_t& position) {
+  auto* column_families = new std::vector<ColumnFamilyDescriptor>();
   auto* column_names = new std::vector<string>();
   Status s = DB::ListColumnFamilies(options, db_path, column_names);
   assert(s.ok());
   bool already_in_list = _name == "";
-  size_t i=0;
-  for(string name : *column_names)
-  {
-    if(name == _name) {
+  size_t i = 0;
+  for (string name : *column_names) {
+    if (name == _name) {
       already_in_list = true;
       position = i;
     }
     column_families->emplace_back(name, ColumnFamilyOptions());
     i++;
   }
-  if(!already_in_list) {
+  if (!already_in_list) {
     position = i;
     column_families->emplace_back(_name, ColumnFamilyOptions());
   }
@@ -147,8 +139,7 @@ void DatabaseEditor::showAllTables() {
     }
     delete it;
   }
-  for (auto handle : handles)
-    db->DestroyColumnFamilyHandle(handle);
+  for (auto handle : handles) db->DestroyColumnFamilyHandle(handle);
   delete column_families;
   delete db;
 }
@@ -168,8 +159,7 @@ void DatabaseEditor::createTable() {
   if (!s.ok()) std::cerr << s.ToString() << std::endl;
   assert(s.ok());
   delete cf;
-  for (auto handle : handles)
-    db->DestroyColumnFamilyHandle(handle);
+  for (auto handle : handles) db->DestroyColumnFamilyHandle(handle);
   delete column_families;
   delete db;
 }
@@ -205,12 +195,10 @@ void DatabaseEditor::deleteAll() {
   Status s = DB::Open(DBOptions(), db_path, *column_families, &handles, &db);
   if (!s.ok()) std::cerr << s.ToString() << std::endl;
   assert(s.ok());
-  for(size_t i = 1; i!= handles.size(); i++)
-    db->DropColumnFamily(handles[i]);
+  for (size_t i = 1; i != handles.size(); i++) db->DropColumnFamily(handles[i]);
   if (!s.ok()) std::cerr << s.ToString() << std::endl;
   assert(s.ok());
   for (auto handle : handles) db->DestroyColumnFamilyHandle(handle);
   delete column_families;
   delete db;
 }
-
