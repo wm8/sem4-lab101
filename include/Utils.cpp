@@ -165,7 +165,7 @@ void run(int argc, char **argv) {
   // Read
   MESSAGE_LOG(data->log_level) << "Reading...\n";
   std::vector<std::thread> threads;
-  for (unsigned int i = 0; i != data->thread_count; i++)
+  for (size_t i = 0; i != data->thread_count; ++i)
     threads.emplace_back(readTask, i, data);
   for (unsigned int i = 0; i != data->thread_count; i++)
     if (threads[i].joinable()) threads[i].join();
@@ -206,9 +206,9 @@ void showDB(Data* data, int length, DB* db,
             std::vector<ColumnFamilyDescriptor>* tables) {
   std::vector<rocksdb::Iterator*> its;
   std::string line = "|";
-  for (size_t i = 0; i != tables->size(); i++)
+  for (size_t i = 0; i != tables->size(); ++i)
     line += string(length + 2, '-') + '|';
-  for (auto handle : handles) {
+  for (auto &handle : handles) {
     auto it = db->NewIterator(ReadOptions(), handle);
     it->SeekToFirst();
     its.push_back(it);
@@ -237,5 +237,5 @@ void showDB(Data* data, int length, DB* db,
   }
   ss << line << "\n";
   MESSAGE_LOG(data->log_level) << ss.str();
-  for (auto it : its) delete it;
+  for (auto &it : its) delete it;
 }

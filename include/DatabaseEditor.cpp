@@ -97,7 +97,7 @@ void DatabaseEditor::showTable() {
               << std::endl;
   }
   delete it;
-  for (auto handle : handles) db->DestroyColumnFamilyHandle(handle);
+  for (auto &handle : handles) db->DestroyColumnFamilyHandle(handle);
   delete column_families;
   delete db;
 }
@@ -106,7 +106,13 @@ std::vector<ColumnFamilyDescriptor>* DatabaseEditor::getTables
   auto* column_families = new std::vector<ColumnFamilyDescriptor>();
   auto* column_names = new std::vector<string>();
   Status s = DB::ListColumnFamilies(options, db_path, column_names);
-  assert(s.ok());
+  if(!s.ok())
+  {
+    DB* db;
+    DB::Open(options, db_path, &db);
+    delete db;
+    return getTables(_name, position);
+  }
   bool already_in_list = _name == "";
   size_t i = 0;
   for (string name : *column_names) {
