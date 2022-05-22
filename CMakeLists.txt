@@ -40,7 +40,7 @@ find_package(Boost CONFIG REQUIRED system filesystem thread log program_options)
 add_library(${PROJECT_NAME} STATIC
   # enum your files and delete this comment
   ${CMAKE_CURRENT_SOURCE_DIR}/sources/example.cpp
-        include/Utils.cpp include/Utils.h include/Data.h include/DatabaseEditor.cpp include/DatabaseEditor.h include/Randomizer.cpp include/Randomizer.h include/picosha2.h include/NullLogger.h)
+        include/Utils.cpp include/Utils.h include/Data.h include/picosha2.h include/NullLogger.h)
 
 add_executable(demo
   ${CMAKE_CURRENT_SOURCE_DIR}/demo/main.cpp
